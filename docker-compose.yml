@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  url:
+    networks:
+      - new
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - migrate
+    environment:
+      - DB_PASSWORD=qwerty
+
+  db:
+    restart: always
+    image: postgres:latest
+    networks:
+      - new
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=qwerty
+    healthcheck:
+      test: pg_isready --username "postgres" --dbname "postgres"
+      interval: 1s
+      retries: 3
+      timeout: 5s
+
+  migrate:
+    image: migrate/migrate:latest
+    volumes:
+      - ./migrations:/migrations
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - new
+    command: '-path /migrations/ -database "postgres://postgres:qwerty@db:5432/postgres?sslmode=disable" up'
+
+networks:
+  new:
+    driver: bridge
