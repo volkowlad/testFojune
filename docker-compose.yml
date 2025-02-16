@@ -11,8 +11,6 @@ services:
       - "8080:8080"
     depends_on:
       - migrate
-    environment:
-      - DB_PASSWORD=qwerty
 
   db:
     restart: always
