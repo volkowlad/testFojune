@@ -2,7 +2,6 @@ package deletewallet
 
 import (
 	"github.com/go-chi/render"
-	"github.com/gofrs/uuid"
 	"log/slog"
 	"net/http"
 	"testFojune/internal/errlog"
@@ -10,11 +9,12 @@ import (
 )
 
 type Request struct {
-	WalletID uuid.UUID `json:"wallet_id"`
+	WalletID string `json:"wallet_id"`
 }
 
+//go:generate mockgen -source=deletewallet.go -destination=mocks/deletemock.go
 type DeleterWallet interface {
-	DeleteWallet(uuid uuid.UUID) error
+	DeleteWallet(uuid string) error
 }
 
 func New(log *slog.Logger, walletDeleter DeleterWallet) http.HandlerFunc {

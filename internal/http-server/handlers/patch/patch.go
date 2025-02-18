@@ -1,4 +1,4 @@
-package change
+package patch
 
 import (
 	"github.com/go-chi/chi/v5/middleware"
@@ -10,9 +10,8 @@ import (
 )
 
 type Request struct {
-	WalletID      string `json:"wallet_id"`
-	OperationType string `json:"operation_type"`
-	Amount        int    `json:"amount"`
+	WalletID string `json:"wallet_id"`
+	Amount   int    `json:"amount"`
 }
 
 type Response struct {
@@ -20,12 +19,11 @@ type Response struct {
 	Balance int `json:"balance"`
 }
 
-//go:generate mockgen -source=change.go -destination=mokcs/ckengerMock.go
-type ChangerWallet interface {
-	ChangeWallet(amount int, uuid string, action string) (int, error)
+type UpdaterWallet interface {
+	UpdateWallet(uuid string, amount int) (int, error)
 }
 
-func New(log *slog.Logger, walletChanger ChangerWallet) http.HandlerFunc {
+func New(log *slog.Logger, updaterWallet UpdaterWallet) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log = log.With("request_id", middleware.GetReqID(r.Context()))
 
@@ -33,7 +31,7 @@ func New(log *slog.Logger, walletChanger ChangerWallet) http.HandlerFunc {
 
 		err := render.DecodeJSON(r.Body, &req)
 		if err != nil {
-			log.Error("failed to parse request", errlog.Err(err))
+			log.With("failed to parse request", errlog.Err(err))
 
 			render.JSON(w, r, response.Error("failed to parse request"))
 
@@ -42,11 +40,11 @@ func New(log *slog.Logger, walletChanger ChangerWallet) http.HandlerFunc {
 
 		log.Info("received request", slog.Any("request", req))
 
-		balance, err := walletChanger.ChangeWallet(req.Amount, req.WalletID, req.OperationType)
+		balance, err := updaterWallet.UpdateWallet(req.WalletID, req.Amount)
 		if err != nil {
-			log.Error("failed to change balance", errlog.Err(err))
+			log.With("faield to update wallet", errlog.Err(err))
 
-			render.JSON(w, r, response.Error("failed to change balance"))
+			render.JSON(w, r, response.Error("failed to update wallet"))
 
 			return
 		}

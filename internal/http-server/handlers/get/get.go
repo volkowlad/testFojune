@@ -5,7 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
-	"github.com/gofrs/uuid"
 	"log/slog"
 	"net/http"
 	"testFojune/internal/errlog"
@@ -18,7 +17,7 @@ type Response struct {
 }
 
 type BalanceGetter interface {
-	GetWallet(uuid uuid.UUID) (int, error)
+	GetWallet(uuid string) (int, error)
 }
 
 func New(log *slog.Logger, getterBalance BalanceGetter) http.HandlerFunc {
@@ -34,18 +33,9 @@ func New(log *slog.Logger, getterBalance BalanceGetter) http.HandlerFunc {
 			return
 		}
 
-		walletUUID, err := uuid.FromString(walletid)
-		if err != nil {
-			log.Info("failed to convert uuid", errlog.Err(err))
-
-			render.JSON(w, r, response.Error("invalid request"))
-
-			return
-		}
-
-		balance, err := getterBalance.GetWallet(walletUUID)
+		balance, err := getterBalance.GetWallet(walletid)
 		if errors.Is(err, errors.New("wallet not found")) {
-			log.Info("wallet not found", "uuid", walletUUID)
+			log.Info("wallet not found", "uuid", walletid)
 
 			render.JSON(w, r, response.Error("wallet not found"))
 
