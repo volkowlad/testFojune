@@ -19,6 +19,7 @@ type Response struct {
 	Uuid string `json:"wallet_id,omitempty"`
 }
 
+//go:generate mockgen -source=save.go -destination=mocks/saverMock.go
 type WalletSaver interface {
 	SaveWallet(amount int) (string, error)
 }

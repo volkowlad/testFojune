@@ -1,17 +1,21 @@
 package main
 
 import (
+	"context"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"testFojune/internal/config"
 	"testFojune/internal/db/initdb"
 	"testFojune/internal/errlog"
 	"testFojune/internal/http-server/handlers/change"
 	deletewallet "testFojune/internal/http-server/handlers/delete"
 	"testFojune/internal/http-server/handlers/get"
+	"testFojune/internal/http-server/handlers/patch"
 	"testFojune/internal/http-server/handlers/save"
 )
 
@@ -47,15 +51,20 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
+	router.Use(middleware.Throttle(1000))
 
-	// save wallet
-	router.Post("/wallet/save", save.New(log, db))
-	// get wallet balance
-	router.Get("/wallet/{uuid}", get.New(log, db))
-	// change wallet balance
-	router.Post("/wallet", change.New(log, db))
-	// delete wallet
-	router.Delete("/wallet/delete", deletewallet.New(log, db))
+	router.Route("/wallet", func(wallet chi.Router) {
+		// save wallet
+		wallet.Post("/save", save.New(log, db))
+		// get wallet balance
+		wallet.Get("/{uuid}", get.New(log, db))
+		// change wallet balance
+		wallet.Post("/", change.New(log, db))
+		// delete wallet
+		wallet.Delete("/delete", deletewallet.New(log, db))
+		// update wallet
+		wallet.Patch("/update", patch.New(log, db))
+	})
 
 	log.Info("starting server")
 
@@ -64,8 +73,19 @@ func main() {
 		Handler: router,
 	}
 
-	if err := srv.ListenAndServe(); err != nil {
-		log.Error("failed to start server")
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			log.Error("failed to start server")
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Info("shutting down server")
+
+	if err := srv.Shutdown(context.Background()); err != nil {
+		log.Error("failed to shutdown server")
 	}
-	// TODO: server
 }

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/gofrs/uuid"
 	_ "github.com/lib/pq"
 	"strings"
 	"testFojune/internal/config"
@@ -36,7 +35,7 @@ func InitDB(cfg config.DB) (*Storage, error) {
 	return &Storage{db: db}, nil
 }
 
-func (s *Storage) GetWallet(uuid uuid.UUID) (int, error) {
+func (s *Storage) GetWallet(uuid string) (int, error) {
 	stmt, err := s.db.Prepare("SELECT balance FROM wallet WHERE walletid=$1")
 	if err != nil {
 		return 0, fmt.Errorf("failed to prepare query to get wallet: %w", err)
@@ -54,7 +53,7 @@ func (s *Storage) GetWallet(uuid uuid.UUID) (int, error) {
 	return resBalance, nil
 }
 
-func (s *Storage) ChangeWallet(amount int, uuid uuid.UUID, action string) (int, error) {
+func (s *Storage) ChangeWallet(amount int, uuid string, action string) (int, error) {
 	stmt, err := s.db.Prepare("SELECT balance FROM wallet WHERE walletid=$1")
 	if err != nil {
 		return 0, fmt.Errorf("failed to prepare query to change wallet: %w", err)
@@ -91,7 +90,7 @@ func (s *Storage) ChangeWallet(amount int, uuid uuid.UUID, action string) (int, 
 	return balance, nil
 }
 
-func (s *Storage) DeleteWallet(uuid uuid.UUID) error {
+func (s *Storage) DeleteWallet(uuid string) error {
 	stmt, err := s.db.Prepare("DELETE FROM wallet WHERE walletid=$1")
 	if err != nil {
 		return fmt.Errorf("failed to prepare query to delete wallet: %w", err)
@@ -118,4 +117,18 @@ func (s *Storage) SaveWallet(amount int) (string, error) {
 	}
 
 	return uuid, nil
+}
+
+func (s *Storage) UpdateWallet(uuid string, amount int) (int, error) {
+	stmt, err := s.db.Prepare("UPDATE wallet SET balance=$1 WHERE walletid=$2")
+
+	_, err = stmt.Exec(amount, uuid)
+	if errors.Is(err, sql.ErrNoRows) {
+		return 0, errors.New("wallet not found")
+	}
+	if err != nil {
+		return 0, fmt.Errorf("failed to get wallet: %w", err)
+	}
+
+	return amount, nil
 }
