@@ -5,21 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2e960b60-e3ff-4ec0-a66e-ce4940eace11" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/http-server/handlers/change/change_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/http-server/handlers/change/mokcs/ckengerMock.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/http-server/handlers/patch/patch.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/http-server/handlers/save/mocks/saverMock.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/http-server/handlers/save/save_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/db/methodsdb/changewal.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/db/methodsdb/daletewal.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/db/methodsdb/getwal.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/db/methodsdb/savewal.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/db/methodsdb/updatewal.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/app/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/app/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/db/initdb/initdb.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/db/initdb/initdb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/db/initdb/initdb.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/db/methodsdb/initdb.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/change/change.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http-server/handlers/change/change.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/change/change_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http-server/handlers/change/change_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/change/mokcs/ckengerMock.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/delete/deletewallet.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http-server/handlers/delete/deletewallet.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/get/get.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http-server/handlers/get/get.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/patch/patch.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http-server/handlers/patch/patch.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/save/mocks/saverMock.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/save/save.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http-server/handlers/save/save.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http-server/handlers/save/save_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/http-server/handlers/save/save_test.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,12 +56,13 @@
     "Go Build.go build testFojune/cmd/app.executor": "Run",
     "Go Test.TestChange in testFojune/internal/http-server/handlers/change.executor": "Run",
     "Go Test.TestSave in testFojune/internal/http-server/handlers/save.executor": "Run",
+    "Go Test.TestSave/empty_amount in testFojune/internal/http-server/handlers/save.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "git-widget-placeholder": "feature/tests",
+    "git-widget-placeholder": "feature/tansaction",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
     "last_opened_file_path": "/Users/mielpops/GolandProjects/test2",
@@ -73,7 +76,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestChange in testFojune/internal/http-server/handlers/change">
+  <component name="RunManager" selected="Go Test.TestSave in testFojune/internal/http-server/handlers/save">
     <configuration name="go build testFojune/cmd/app" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="testFojune" />
       <working_directory value="$PROJECT_DIR$" />
@@ -107,11 +110,24 @@
       <pattern value="^\QTestSave\E$" />
       <method v="2" />
     </configuration>
+    <configuration name="TestSave/empty_amount in testFojune/internal/http-server/handlers/save" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="testFojune" />
+      <working_directory value="$PROJECT_DIR$/internal/http-server/handlers/save" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="testFojune/internal/http-server/handlers/save" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestSave\E$/^\Qempty_amount\E$" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Test.TestSave in testFojune/internal/http-server/handlers/save" />
+        <item itemvalue="Go Test.TestSave/empty_amount in testFojune/internal/http-server/handlers/save" />
         <item itemvalue="Go Test.TestChange in testFojune/internal/http-server/handlers/change" />
         <item itemvalue="Go Build.go build testFojune/cmd/app" />
-        <item itemvalue="Go Test.TestSave in testFojune/internal/http-server/handlers/save" />
       </list>
     </recent_temporary>
   </component>

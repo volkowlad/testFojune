@@ -5,6 +5,7 @@
 package mock_save
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,16 +35,16 @@ func (m *MockWalletSaver) EXPECT() *MockWalletSaverMockRecorder {
 }
 
 // SaveWallet mocks base method.
-func (m *MockWalletSaver) SaveWallet(amount int) (string, error) {
+func (m *MockWalletSaver) SaveWallet(ctx context.Context, amount int) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveWallet", amount)
+	ret := m.ctrl.Call(m, "SaveWallet", ctx, amount)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SaveWallet indicates an expected call of SaveWallet.
-func (mr *MockWalletSaverMockRecorder) SaveWallet(amount interface{}) *gomock.Call {
+func (mr *MockWalletSaverMockRecorder) SaveWallet(ctx, amount interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveWallet", reflect.TypeOf((*MockWalletSaver)(nil).SaveWallet), amount)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveWallet", reflect.TypeOf((*MockWalletSaver)(nil).SaveWallet), ctx, amount)
 }

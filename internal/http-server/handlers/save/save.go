@@ -1,6 +1,7 @@
 package save
 
 import (
+	"context"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
@@ -21,12 +22,13 @@ type Response struct {
 
 //go:generate mockgen -source=save.go -destination=mocks/saverMock.go
 type WalletSaver interface {
-	SaveWallet(amount int) (string, error)
+	SaveWallet(ctx context.Context, amount int) (string, error)
 }
 
 func New(log *slog.Logger, saverWallet WalletSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log = log.With("request_id", middleware.GetReqID(r.Context()))
+		ctx := r.Context()
+		log = log.With("request_id", middleware.GetReqID(ctx))
 
 		var req Request
 
@@ -49,7 +51,7 @@ func New(log *slog.Logger, saverWallet WalletSaver) http.HandlerFunc {
 			return
 		}
 
-		uuid, err := saverWallet.SaveWallet(req.Amount)
+		uuid, err := saverWallet.SaveWallet(ctx, req.Amount)
 		if err != nil {
 			log.Error("failed to save wallet: %s", errlog.Err(err))
 

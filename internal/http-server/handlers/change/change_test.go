@@ -2,6 +2,7 @@ package change
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -20,6 +21,7 @@ func TestChange(t *testing.T) {
 		inputAction    string
 		inputAmount    int
 		inputWalletid  string
+		inputCtx       context.Context
 		expectedStatus int
 		expectedBody   string
 		respError      string
@@ -30,6 +32,7 @@ func TestChange(t *testing.T) {
 			inputAction:    "dePosit",
 			inputAmount:    666,
 			inputWalletid:  uuid.New().String(),
+			inputCtx:       context.Background(),
 			expectedStatus: http.StatusOK,
 			expectedBody:   "{\"status\":\"OK\",\"balance\":1}\n",
 		},
@@ -43,7 +46,7 @@ func TestChange(t *testing.T) {
 			defer c.Finish()
 
 			changerMock := mock_change.NewMockChangerWallet(c)
-			changerMock.EXPECT().ChangeWallet(tt.inputAmount, tt.inputWalletid, tt.inputAction).Return(1, tt.mockError)
+			changerMock.EXPECT().ChangeWallet(tt.inputCtx, tt.inputAmount, tt.inputWalletid, tt.inputAction).Return(1, tt.mockError)
 			changeHandler := New(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{})), changerMock)
 
 			inputBody := fmt.Sprintf(`{"wallet_id": "%s", "operation_type": "%s", "amount": %d}`, tt.inputWalletid, tt.inputAction, tt.inputAmount)

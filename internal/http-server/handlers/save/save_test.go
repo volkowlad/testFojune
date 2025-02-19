@@ -2,6 +2,8 @@ package save_test
 
 import (
 	"bytes"
+	"context"
+	"errors"
 	"fmt"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -18,16 +20,32 @@ func TestSave(t *testing.T) {
 	cases := []struct {
 		result         string
 		inputAmount    int
+		inputCtx       context.Context
 		expectedStatus int
 		expectedBody   string
-		respError      string
 		mockError      error
 	}{
 		{
 			result:         "Success",
 			inputAmount:    1000,
+			inputCtx:       context.Background(),
 			expectedStatus: http.StatusOK,
 			expectedBody:   "{\"status\":\"OK\",\"wallet_id\":\"ok\"}\n",
+		},
+		{
+			result:         "empty amount",
+			inputCtx:       context.Background(),
+			expectedStatus: http.StatusBadRequest,
+			expectedBody:   "{\"status\":\"ERROR\",\"error\":\"failed to save wallet\"}\n",
+			mockError:      errors.New("empty amount"),
+		},
+		{
+			result:         "no connected",
+			inputAmount:    1000,
+			inputCtx:       context.Background(),
+			expectedStatus: http.StatusServiceUnavailable,
+			expectedBody:   "{\"status\":\"ERROR\",\"error\":\"failed to save wallet\"}\n",
+			mockError:      errors.New("no connected"),
 		},
 	}
 
@@ -42,7 +60,7 @@ func TestSave(t *testing.T) {
 			//if testCase.respError == "" || testCase.mockError != nil {
 			//	walletSaverMock.EXPECT().SaveWallet(testCase.inputAmount).Return(1, testCase.mockError)
 			//}
-			walletSaverMock.EXPECT().SaveWallet(testCase.inputAmount).Return("ok", testCase.mockError)
+			walletSaverMock.EXPECT().SaveWallet(testCase.inputCtx, testCase.inputAmount).Return("ok", testCase.mockError)
 			saverHandler := save.New(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{})), walletSaverMock)
 
 			input := fmt.Sprintf(`{"amount": %d}`, testCase.inputAmount)
