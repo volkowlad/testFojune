@@ -1,6 +1,7 @@
 package patch
 
 import (
+	"context"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"log/slog"
@@ -20,7 +21,7 @@ type Response struct {
 }
 
 type UpdaterWallet interface {
-	UpdateWallet(uuid string, amount int) (int, error)
+	UpdateWallet(ctx context.Context, uuid string, amount int) (int, error)
 }
 
 func New(log *slog.Logger, updaterWallet UpdaterWallet) http.HandlerFunc {
@@ -40,9 +41,10 @@ func New(log *slog.Logger, updaterWallet UpdaterWallet) http.HandlerFunc {
 
 		log.Info("received request", slog.Any("request", req))
 
-		balance, err := updaterWallet.UpdateWallet(req.WalletID, req.Amount)
+		ctx := r.Context()
+		balance, err := updaterWallet.UpdateWallet(ctx, req.WalletID, req.Amount)
 		if err != nil {
-			log.With("faield to update wallet", errlog.Err(err))
+			log.With("failed to update wallet", errlog.Err(err))
 
 			render.JSON(w, r, response.Error("failed to update wallet"))
 

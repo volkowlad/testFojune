@@ -1,6 +1,7 @@
 package change
 
 import (
+	"context"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 	"log/slog"
@@ -22,7 +23,7 @@ type Response struct {
 
 //go:generate mockgen -source=change.go -destination=mokcs/ckengerMock.go
 type ChangerWallet interface {
-	ChangeWallet(amount int, uuid string, action string) (int, error)
+	ChangeWallet(ctx context.Context, amount int, uuid string, action string) (int, error)
 }
 
 func New(log *slog.Logger, walletChanger ChangerWallet) http.HandlerFunc {
@@ -42,7 +43,8 @@ func New(log *slog.Logger, walletChanger ChangerWallet) http.HandlerFunc {
 
 		log.Info("received request", slog.Any("request", req))
 
-		balance, err := walletChanger.ChangeWallet(req.Amount, req.WalletID, req.OperationType)
+		ctx := r.Context()
+		balance, err := walletChanger.ChangeWallet(ctx, req.Amount, req.WalletID, req.OperationType)
 		if err != nil {
 			log.Error("failed to change balance", errlog.Err(err))
 

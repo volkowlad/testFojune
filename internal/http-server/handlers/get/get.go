@@ -1,6 +1,7 @@
 package get
 
 import (
+	"context"
 	"errors"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -17,7 +18,7 @@ type Response struct {
 }
 
 type BalanceGetter interface {
-	GetWallet(uuid string) (int, error)
+	GetWallet(ctx context.Context, uuid string) (int, error)
 }
 
 func New(log *slog.Logger, getterBalance BalanceGetter) http.HandlerFunc {
@@ -33,7 +34,8 @@ func New(log *slog.Logger, getterBalance BalanceGetter) http.HandlerFunc {
 			return
 		}
 
-		balance, err := getterBalance.GetWallet(walletid)
+		ctx := r.Context()
+		balance, err := getterBalance.GetWallet(ctx, walletid)
 		if errors.Is(err, errors.New("wallet not found")) {
 			log.Info("wallet not found", "uuid", walletid)
 

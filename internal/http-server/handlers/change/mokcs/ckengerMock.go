@@ -5,6 +5,7 @@
 package mock_change
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,16 +35,16 @@ func (m *MockChangerWallet) EXPECT() *MockChangerWalletMockRecorder {
 }
 
 // ChangeWallet mocks base method.
-func (m *MockChangerWallet) ChangeWallet(amount int, uuid, action string) (int, error) {
+func (m *MockChangerWallet) ChangeWallet(ctx context.Context, amount int, uuid, action string) (int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ChangeWallet", amount, uuid, action)
+	ret := m.ctrl.Call(m, "ChangeWallet", ctx, amount, uuid, action)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ChangeWallet indicates an expected call of ChangeWallet.
-func (mr *MockChangerWalletMockRecorder) ChangeWallet(amount, uuid, action interface{}) *gomock.Call {
+func (mr *MockChangerWalletMockRecorder) ChangeWallet(ctx, amount, uuid, action interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeWallet", reflect.TypeOf((*MockChangerWallet)(nil).ChangeWallet), amount, uuid, action)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeWallet", reflect.TypeOf((*MockChangerWallet)(nil).ChangeWallet), ctx, amount, uuid, action)
 }

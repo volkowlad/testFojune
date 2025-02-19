@@ -10,7 +10,7 @@ import (
 	"os/signal"
 	"syscall"
 	"testFojune/internal/config"
-	"testFojune/internal/db/initdb"
+	"testFojune/internal/db/methodsdb"
 	"testFojune/internal/errlog"
 	"testFojune/internal/http-server/handlers/change"
 	deletewallet "testFojune/internal/http-server/handlers/delete"
@@ -30,7 +30,7 @@ func main() {
 	log.Info("starting")
 	log.Debug("enable Debug level")
 
-	db, err := initdb.InitDB(config.DB{
+	db, err := methodsdb.InitDB(config.DB{
 		User:     cfg.User,
 		Password: cfg.Password,
 		Host:     cfg.Host,
